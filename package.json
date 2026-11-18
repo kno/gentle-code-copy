@@ -1,6 +1,6 @@
 {
   "name": "gentle-code-copy",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Pi / Gentle Shell extension: label code blocks in responses and copy them with /copy-code.",
   "license": "MIT",
   "author": "kno <linsms@gmail.com>",
@@ -48,6 +48,9 @@
     "@earendil-works/pi-tui": {
       "optional": true
     }
+  },
+  "devDependencies": {
+    "@earendil-works/pi-tui": "^1.5.2"
   },
   "engines": {
     "node": ">=22.19.0"
