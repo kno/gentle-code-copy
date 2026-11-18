@@ -1,0 +1,55 @@
+{
+  "name": "gentle-code-copy",
+  "version": "0.1.0",
+  "description": "Pi / Gentle Shell extension: label code blocks in responses and copy them with /copy-code.",
+  "license": "MIT",
+  "author": "kno <linsms@gmail.com>",
+  "homepage": "https://github.com/kno/gentle-code-copy#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kno/gentle-code-copy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kno/gentle-code-copy/issues"
+  },
+  "type": "module",
+  "keywords": [
+    "pi-package",
+    "pi",
+    "pi-extension",
+    "gentle-shell",
+    "gentle-shell-extension",
+    "clipboard",
+    "code-block",
+    "copy"
+  ],
+  "files": [
+    "src",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test \"tests/*.test.ts\""
+  },
+  "pi": {
+    "extensions": [
+      "./src/index.ts"
+    ]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-coding-agent": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  }
+}
