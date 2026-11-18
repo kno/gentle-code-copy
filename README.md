@@ -11,16 +11,17 @@ The extension numbers every code block in the agent's responses and adds a
 When the agent answers with a code block, a label appears right above it:
 
 ~~~text
-📋 /copy-code 1 · bash
+📋 `/copy-code 1` (`⌘⇧C`) · bash
 ```bash
 npm install
 npm test
 ```
 ~~~
 
-The number identifies the block inside that response, and the language comes
-from the block's fence. Syntax highlighting is Pi's own; this extension only
-adds the label.
+The number identifies the block inside that response. The shortcut appears
+beside the command (Cmd+Shift+C on macOS, Ctrl+Shift+C on Windows), with the
+language from the block's fence at the end. Syntax highlighting is Pi's own;
+this extension only adds the label.
 
 ## Usage
 
@@ -28,6 +29,13 @@ adds the label.
 | --- | --- |
 | `/copy-code 2` | Copies block 2 of the last response. |
 | `/copy-code` | Opens a list of the blocks in the last response; pick one to copy it. |
+
+The keyboard shortcut is **Cmd+Shift+C** on macOS and **Ctrl+Shift+C** on
+Windows. After activating it, press a single digit (1–9) to copy that block,
+press Enter to open the selector, or press Escape to cancel. Blocks numbered
+10 or higher can be selected from the list. Other platforms use Ctrl+Shift+C.
+Some terminals may intercept these shortcuts; macOS terminals must forward the
+Super modifier to Pi.
 
 After copying, a notification confirms it, for example
 `Copied code block 2 (ts, 12 lines)`. Asking for a block that does not exist
@@ -62,8 +70,9 @@ pi -e .      # try it in a Pi session
 
 | File | Role |
 | --- | --- |
-| `src/index.ts` | Pi wiring: label transformer, `/copy-code` command, clipboard. |
+| `src/index.ts` | Pi wiring: label transformer, shortcut, `/copy-code` command, clipboard. |
 | `src/code-blocks.ts` | Pure fence parsing and labelling, covered by `tests/`. |
+| `src/copy-shortcut.ts` | Platform shortcut and key-input handling, covered by `tests/`. |
 
 ## License
 

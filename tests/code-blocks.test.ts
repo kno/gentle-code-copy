@@ -42,17 +42,17 @@ test("extractCodeBlocks strips the fence indentation from list items", () => {
 
 test("labelCodeBlocks adds a numbered copy label above each block", () => {
 	assert.equal(
-		labelCodeBlocks(sample),
+		labelCodeBlocks(sample, "⌘⇧C"),
 		[
 			"Run this:",
-			"📋 `/copy-code 1` · bash",
+			"📋 `/copy-code 1` (`⌘⇧C`) · bash",
 			"```bash",
 			"npm install",
 			"npm test",
 			"```",
 			"",
 			"Then:",
-			"📋 `/copy-code 2` · ts",
+			"📋 `/copy-code 2` (`⌘⇧C`) · ts",
 			"~~~ts",
 			"const x = 1;",
 			"~~~",
@@ -62,7 +62,7 @@ test("labelCodeBlocks adds a numbered copy label above each block", () => {
 
 test("labelCodeBlocks keeps list indentation and omits a missing language", () => {
 	const md = ["1. Step:", "   ```", "   ls", "   ```"].join("\n");
-	assert.equal(labelCodeBlocks(md), ["1. Step:", "   📋 `/copy-code 1`", "   ```", "   ls", "   ```"].join("\n"));
+	assert.equal(labelCodeBlocks(md, "Ctrl+Shift+C"), ["1. Step:", "   📋 `/copy-code 1` (`Ctrl+Shift+C`)", "   ```", "   ls", "   ```"].join("\n"));
 });
 
 test("labelCodeBlocks leaves markdown without code blocks unchanged", () => {

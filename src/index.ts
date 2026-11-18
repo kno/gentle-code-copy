@@ -1,5 +1,7 @@
+import { platform } from "node:os";
 import { copyToClipboard, type ExtensionAPI, type ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { blockChoice, type CodeBlock, extractCodeBlocks, labelCodeBlocks } from "./code-blocks.ts";
+import { shortcutForPlatform, shortcutInputAction, shortcutLabelForPlatform } from "./copy-shortcut.ts";
 
 interface TextPart {
 	type?: unknown;
@@ -33,9 +35,54 @@ async function copyBlock(block: CodeBlock, ctx: ExtensionContext): Promise<void>
 	}
 }
 
+async function chooseBlock(blocks: CodeBlock[], ctx: ExtensionContext): Promise<void> {
+	const choices = blocks.map(blockChoice);
+	const choice = await ctx.ui.select("Copy which code block?", choices);
+	if (choice === undefined) return;
+	await copyBlock(blocks[choices.indexOf(choice)], ctx);
+}
+
 export default function (pi: ExtensionAPI) {
 	// Display-only: the session and the model context keep the original text.
-	pi.registerMarkdownTransformer((markdown) => labelCodeBlocks(markdown), { messageTypes: ["assistant"] });
+	pi.registerMarkdownTransformer((markdown) => labelCodeBlocks(markdown, shortcutLabelForPlatform(platform())), { messageTypes: ["assistant"] });
+
+	pi.registerShortcut(shortcutForPlatform(platform()), {
+		description: "Copy a code block from the last response",
+		handler: (ctx) => {
+			if (!ctx.hasUI) return;
+			const blocks = extractCodeBlocks(lastAssistantText(ctx));
+			if (blocks.length === 0) {
+				ctx.ui.notify("The last response has no code blocks", "warning");
+				return;
+			}
+
+			ctx.ui.setStatus("gentle-code-copy", "Copy code: press 1–9, Enter for list, or Esc to cancel");
+			const unsubscribe = ctx.ui.onTerminalInput((data) => {
+				const action = shortcutInputAction(data, blocks.length);
+				if (action.type === "release") return;
+				if (action.type === "ignore") {
+					unsubscribe();
+					ctx.ui.setStatus("gentle-code-copy", undefined);
+					return;
+				}
+
+				unsubscribe();
+				ctx.ui.setStatus("gentle-code-copy", undefined);
+				if (action.type === "cancel") return { consume: true };
+				if (action.type === "select") {
+					void chooseBlock(blocks, ctx);
+					return { consume: true };
+				}
+				if (action.type === "invalid") {
+					ctx.ui.notify(`No code block ${action.input}: the last response has ${blocks.length} (1-${blocks.length})`, "error");
+					return { consume: true };
+				}
+
+				void copyBlock(blocks[action.index - 1], ctx);
+				return { consume: true };
+			});
+		},
+	});
 
 	pi.registerCommand("copy-code", {
 		description: "Copy a code block from the last response: /copy-code [N]",
@@ -61,10 +108,7 @@ export default function (pi: ExtensionAPI) {
 				ctx.ui.notify("Usage: /copy-code N", "error");
 				return;
 			}
-			const choices = blocks.map(blockChoice);
-			const choice = await ctx.ui.select("Copy which code block?", choices);
-			if (choice === undefined) return;
-			await copyBlock(blocks[choices.indexOf(choice)], ctx);
+			await chooseBlock(blocks, ctx);
 		},
 	});
 }
