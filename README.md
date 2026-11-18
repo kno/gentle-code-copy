@@ -1,29 +1,40 @@
 # gentle-code-copy
 
-Pi / Gentle Shell extension that makes code blocks in responses easy to copy.
+Copy any code block from a Pi / Gentle Shell response without selecting it by
+hand.
 
-Every fenced code block in an assistant response gets a numbered label:
+The extension numbers every code block in the agent's responses and adds a
+`/copy-code` command that copies one of them to the clipboard.
 
-```text
+## What you see
+
+When the agent answers with a code block, a label appears right above it:
+
+~~~text
 📋 /copy-code 1 · bash
-  npm install
+```bash
+npm install
+npm test
 ```
+~~~
 
-- `/copy-code N` copies block N of the **last response** to the clipboard.
-- `/copy-code` opens a selector with every block of the last response.
+The number identifies the block inside that response, and the language comes
+from the block's fence. Syntax highlighting is Pi's own; this extension only
+adds the label.
 
-Syntax highlighting is Pi's own (highlight.js with your theme colours); this
-extension only adds the labels and the command. Labels are display-only: the
-session and the model context keep the original text.
+## Usage
 
-Pi's built-in `/copy` (and `ctrl+x`) still copies the whole response.
+| Command | What it does |
+| --- | --- |
+| `/copy-code 2` | Copies block 2 of the last response. |
+| `/copy-code` | Opens a list of the blocks in the last response; pick one to copy it. |
 
-## Limitations
+After copying, a notification confirms it, for example
+`Copied code block 2 (ts, 12 lines)`. Asking for a block that does not exist
+shows how many there are, for example
+`No code block 9: the last response has 2 (1-2)`.
 
-- Pi does not let extensions add clickable elements inside a response, so
-  copying is keyboard-driven.
-- Numbers restart in every response; `/copy-code` always targets the last
-  one.
+Pi's built-in `/copy` (or `ctrl+x`) still copies the whole response.
 
 ## Install
 
@@ -31,15 +42,28 @@ Pi's built-in `/copy` (and `ctrl+x`) still copies the whole response.
 pi install npm:gentle-code-copy
 ```
 
+Then restart Pi or run `/reload`.
+
+## Good to know
+
+- **Last response only.** Numbers restart in every response, and `/copy-code`
+  always reads the most recent one.
+- **Keyboard, not mouse.** Pi does not let extensions add clickable buttons
+  inside a response, so copying goes through the command.
+- **Display only.** The labels are added when Pi draws the response. The
+  saved session and what the model sees keep the original text.
+
 ## Develop
 
 ```bash
-npm test        # unit tests for src/code-blocks.ts
-pi -e .         # try it in a Pi session
+npm test     # unit tests for src/code-blocks.ts
+pi -e .      # try it in a Pi session
 ```
 
-- `src/index.ts` — Pi wiring (markdown transformer, command, clipboard).
-- `src/code-blocks.ts` — pure fence parsing and labelling, covered by `tests/`.
+| File | Role |
+| --- | --- |
+| `src/index.ts` | Pi wiring: label transformer, `/copy-code` command, clipboard. |
+| `src/code-blocks.ts` | Pure fence parsing and labelling, covered by `tests/`. |
 
 ## License
 
