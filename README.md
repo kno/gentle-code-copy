@@ -11,7 +11,7 @@ The extension numbers every code block in the agent's responses and adds a
 When the agent answers with a code block, a label appears right above it:
 
 ~~~text
-📋 `/copy-code 1` (`⌘⇧C`) · bash
+📋 `/copy-code 1` (`⌘⇧C`)
 ```bash
 npm install
 npm test
@@ -19,9 +19,9 @@ npm test
 ~~~
 
 The number identifies the block inside that response. The shortcut appears
-beside the command (Cmd+Shift+C on macOS, Ctrl+Shift+C on Windows), with the
-language from the block's fence at the end. Syntax highlighting is Pi's own;
-this extension only adds the label.
+beside the command (Cmd+Shift+C on macOS, Ctrl+Shift+C on Windows). The
+language is already shown by the block's own fence, so the label does not
+repeat it. Syntax highlighting is Pi's own; this extension only adds the label.
 
 ## Usage
 

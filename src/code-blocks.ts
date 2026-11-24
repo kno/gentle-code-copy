@@ -59,14 +59,13 @@ export function extractCodeBlocks(markdown: string): CodeBlock[] {
 	return blocks;
 }
 
-/** Insert a numbered copy command, optional shortcut, and language label above every code block. */
+/** Insert a numbered copy command and optional shortcut above every code block; the fence already shows the language. */
 export function labelCodeBlocks(markdown: string, shortcutLabel = ""): string {
 	const lines = markdown.split("\n");
 	const labels = new Map<number, string>();
 	walk(lines, (block, fence, openLine) => {
 		const shortcut = shortcutLabel ? ` (\`${shortcutLabel}\`)` : "";
-		const lang = block.lang ? ` · ${block.lang}` : "";
-		labels.set(openLine, `${fence.indent}📋 \`/copy-code ${block.index}\`${shortcut}${lang}`);
+		labels.set(openLine, `${fence.indent}📋 \`/copy-code ${block.index}\`${shortcut}`);
 	});
 	if (labels.size === 0) return markdown;
 	return lines.flatMap((line, i) => (labels.has(i) ? [labels.get(i)!, line] : [line])).join("\n");
