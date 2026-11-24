@@ -40,19 +40,19 @@ test("extractCodeBlocks strips the fence indentation from list items", () => {
 	assert.deepEqual(extractCodeBlocks(md), [{ index: 1, lang: "bash", code: "ls -la" }]);
 });
 
-test("labelCodeBlocks adds a numbered copy label above each block", () => {
+test("labelCodeBlocks adds a numbered copy label without the language above each block", () => {
 	assert.equal(
 		labelCodeBlocks(sample, "⌘⇧C"),
 		[
 			"Run this:",
-			"📋 `/copy-code 1` (`⌘⇧C`) · bash",
+			"📋 `/copy-code 1` (`⌘⇧C`)",
 			"```bash",
 			"npm install",
 			"npm test",
 			"```",
 			"",
 			"Then:",
-			"📋 `/copy-code 2` (`⌘⇧C`) · ts",
+			"📋 `/copy-code 2` (`⌘⇧C`)",
 			"~~~ts",
 			"const x = 1;",
 			"~~~",

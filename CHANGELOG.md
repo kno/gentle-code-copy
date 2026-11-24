@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.2]
+
+- Drop the language from the copy label above each code block; the fence already shows it.
+
 ## [0.1.1]
 
 - Publish to npm from GitHub Actions with trusted publishing when `main` gets a new version.
