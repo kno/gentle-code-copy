@@ -40,19 +40,19 @@ test("extractCodeBlocks strips the fence indentation from list items", () => {
 	assert.deepEqual(extractCodeBlocks(md), [{ index: 1, lang: "bash", code: "ls -la" }]);
 });
 
-test("labelCodeBlocks adds a numbered copy label without the language above each block", () => {
+test("labelCodeBlocks adds the copy command and the shortcut key sequence above each block", () => {
 	assert.equal(
 		labelCodeBlocks(sample, "⌘⇧C"),
 		[
 			"Run this:",
-			"📋 `/copy-code 1` (`⌘⇧C`)",
+			"📋 `/copy-code 1` (`⌘⇧C + 1`)",
 			"```bash",
 			"npm install",
 			"npm test",
 			"```",
 			"",
 			"Then:",
-			"📋 `/copy-code 2` (`⌘⇧C`)",
+			"📋 `/copy-code 2` (`⌘⇧C + 2`)",
 			"~~~ts",
 			"const x = 1;",
 			"~~~",
@@ -62,7 +62,7 @@ test("labelCodeBlocks adds a numbered copy label without the language above each
 
 test("labelCodeBlocks keeps list indentation and omits a missing language", () => {
 	const md = ["1. Step:", "   ```", "   ls", "   ```"].join("\n");
-	assert.equal(labelCodeBlocks(md, "Ctrl+Shift+C"), ["1. Step:", "   📋 `/copy-code 1` (`Ctrl+Shift+C`)", "   ```", "   ls", "   ```"].join("\n"));
+	assert.equal(labelCodeBlocks(md, "Ctrl+Shift+C"), ["1. Step:", "   📋 `/copy-code 1` (`Ctrl+Shift+C + 1`)", "   ```", "   ls", "   ```"].join("\n"));
 });
 
 test("labelCodeBlocks leaves markdown without code blocks unchanged", () => {
@@ -72,4 +72,11 @@ test("labelCodeBlocks leaves markdown without code blocks unchanged", () => {
 test("blockChoice summarises a block for the selector", () => {
 	assert.equal(blockChoice({ index: 2, lang: "bash", code: "\n  npm install\nnpm test" }), "2 · bash · npm install (2 lines)");
 	assert.equal(blockChoice({ index: 1, lang: "", code: "x".repeat(80) }), `1 · text · ${"x".repeat(47)}… (1 line)`);
+});
+
+test("labelCodeBlocks omits the shortcut from block 10 on, which one digit cannot select", () => {
+	const md = Array.from({ length: 10 }, (_, i) => `\`\`\`\nblock ${i + 1}\n\`\`\``).join("\n");
+	const labels = labelCodeBlocks(md, "⌘⇧C").split("\n").filter((line) => line.startsWith("📋"));
+	assert.equal(labels[8], "📋 `/copy-code 9` (`⌘⇧C + 9`)");
+	assert.equal(labels[9], "📋 `/copy-code 10`");
 });
